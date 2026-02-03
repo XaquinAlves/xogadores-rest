@@ -3,8 +3,11 @@
 namespace Com\Daw2\Core;
 
 use Ahc\Jwt\JWTException;
+use Com\Daw2\Controllers\UserController;
+use Com\Daw2\Controllers\XogadorController;
 use Com\Daw2\Libraries\JwtHelper;
 use Com\Daw2\Models\PermisosModel;
+use Com\Daw2\Models\XogadorModel;
 use Com\Daw2\Traits\JwtTool;
 use Steampixel\Route;
 
@@ -18,14 +21,27 @@ class FrontController
             if (JwtTool::requestHasToken()) {
                 $token = JwtTool::getBearerToken();
                 $user = JwtHelper::decode($token);
-                $user['permisos'] = (new PermisosModel())->getPermisos($user['user_type']);
+                self::$user['permisos'] = (new PermisosModel())->getPermisos($user['user_type']);
             } else {
-                $user['permisos'] = [];
+                self::$user['permisos'] = [];
             }
+            Route::add('/login', function () {
+                (new UserController())->login();
+            }, 'post');
             Route::add('/xogador', function () {
-                
+                if (str_contains(self::$user['permisos']['xogador'], 'r')) {
+                    (new XogadorController())->getXogadores();
+                } else {
+                    http_response_code(403);
+                }
             });
-            
+            Route::add('/xogador/(\d*)', function ($num_licencia) {
+                if (str_contains(self::$user['permisos']['xogador'], 'r')) {
+                    (new XogadorController())->getXogador((int)$num_licencia);
+                } else {
+                    http_response_code(403);
+                }
+            });
             Route::pathNotFound(
                 function () {
                     http_response_code(404);

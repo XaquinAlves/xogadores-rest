@@ -7,13 +7,14 @@ use Com\Daw2\Core\BaseDbModel;
 
 class XogadorModel extends BaseDbModel
 {
+    private const SELECT_FROM_JOIN = "SELECT numero_licencia, xogador.codigo_equipo, equipo.nome_equipo, xogador.nome, 
+                estatura, posicion, nacionalidade, ficha, data_nacemento, temporadas
+                FROM xogador LEFT JOIN equipo ON equipo.codigo = xogador.codigo_equipo ";
     private const ORDER_BY = ['numero_licencia', 'equipo.nome_equipo', 'xogador.nome', 'estatura', 'data_nacemento'];
     private const PAGE_SIZE = 30;
     public function getXogadoresByFilters(array $filters): array
     {
-        $sql = "SELECT numero_licencia, xogador.codigo_equipo, equipo.nome_equipo, xogador.nome , estatura, posicion, 
-                nacionalidade, ficha, data_nacemento, temporadas
-                FROM xogador LEFT JOIN equipo ON equipo.codigo = xogador.codigo_equipo ";
+        $sql = self::SELECT_FROM_JOIN;
         $params = [];
         $conditions = [];
 
@@ -27,13 +28,13 @@ class XogadorModel extends BaseDbModel
             $params['codigo_equipo'] = $filters['codigo_equipo'];
         }
 
-        if (!empty($filters['nome_equipon'])) {
+        if (!empty($filters['nome_equipo'])) {
             $conditions[] = "nome_equipo LIKE :nome_equipo ";
             $params['nome_equipo'] = "%{$filters['nome_equipo']}%";
         }
 
         if (!empty($filters['nome_xogador'])) {
-            $conditions[] = "nome_xogador LIKE :nome_xogador ";
+            $conditions[] = "xogador.nome LIKE :nome_xogador ";
             $params['nome_xogador'] = "%{$filters['nome_xogador']}%";
         }
 
@@ -72,5 +73,13 @@ class XogadorModel extends BaseDbModel
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll();
+    }
+
+    public function getXogadorByNumeroLicencia(int $numeroLicencia): array|false
+    {
+        $sql = self::SELECT_FROM_JOIN . "WHERE numero_licencia = :numero_licencia ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['numero_licencia' => $numeroLicencia]);
+        return $stmt->fetch();
     }
 }

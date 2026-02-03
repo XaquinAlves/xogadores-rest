@@ -11,7 +11,7 @@ use Com\Daw2\Models\UserModel;
 
 class UserController extends BaseController
 {
-    public function login()
+    public function login(): void
     {
         if (empty($_POST['email']) || empty($_POST['password'])) {
             $respuesta = new Respuesta(403, ['Datos de acceso incorrecto']);
