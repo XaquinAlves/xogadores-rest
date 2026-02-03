@@ -23,7 +23,7 @@ class FrontController
                 $user = JwtHelper::decode($token);
                 self::$user['permisos'] = (new PermisosModel())->getPermisos($user['user_type']);
             } else {
-                self::$user['permisos'] = [];
+                self::$user['permisos']['xogador'] = '';
             }
             Route::add('/login', function () {
                 (new UserController())->login();
@@ -43,8 +43,8 @@ class FrontController
                 }
             });
             Route::add('/xogador/(\d*)', function ($num_licencia) {
-                if (str_contains(self::$user['permisos']['xogador'], 'd')) {
-                    (new XogadorController())->getXogador((int)$num_licencia);
+                if (str_contains(self::$user['permisos']['xogador'], 'r')) {
+                    (new XogadorController())->deleteXogador((int)$num_licencia);
                 } else {
                     http_response_code(403);
                 }
