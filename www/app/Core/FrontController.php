@@ -42,6 +42,13 @@ class FrontController
                     http_response_code(403);
                 }
             });
+            Route::add('/xogador/(\d*)', function ($num_licencia) {
+                if (str_contains(self::$user['permisos']['xogador'], 'd')) {
+                    (new XogadorController())->getXogador((int)$num_licencia);
+                } else {
+                    http_response_code(403);
+                }
+            }, 'delete');
             Route::pathNotFound(
                 function () {
                     http_response_code(404);

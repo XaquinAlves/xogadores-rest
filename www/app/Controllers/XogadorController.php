@@ -52,7 +52,7 @@ class XogadorController extends BaseController
         return $errors;
     }
 
-    public function getXogador(int $num_licencia)
+    public function getXogador(int $num_licencia): void
     {
         $xogador = (new XogadorModel())->getXogadorByNumeroLicencia($num_licencia);
         if ($xogador === false) {
@@ -61,5 +61,15 @@ class XogadorController extends BaseController
             $respuesta = new Respuesta(200, $xogador);
         }
         $this->view->show('json.view.php', ['respuesta' => $respuesta]);
+    }
+
+    public function deleteXogador(int $num_licencia): void
+    {
+        $result = (new XogadorModel())->deleteXogador($num_licencia);
+        if ($result === false) {
+            $respuesta = new Respuesta(404, ['Xogador non encontrado']);
+        } else {
+            $respuesta = new Respuesta(200, ['Xogador eliminado']);
+        }
     }
 }
