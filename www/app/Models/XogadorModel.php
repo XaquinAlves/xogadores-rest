@@ -87,6 +87,7 @@ class XogadorModel extends BaseDbModel
     {
         $sql = "DELETE FROM xogador WHERE numero_licencia = :numero_licencia";
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute(['numero_licencia' => $numeroLicencia]);
+        $stmt->execute(['numero_licencia' => $numeroLicencia]);
+        return $stmt->rowCount() == 1;
     }
 }

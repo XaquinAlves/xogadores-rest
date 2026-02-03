@@ -66,10 +66,13 @@ class XogadorController extends BaseController
     public function deleteXogador(int $num_licencia): void
     {
         $result = (new XogadorModel())->deleteXogador($num_licencia);
+
         if ($result === false) {
             $respuesta = new Respuesta(404, ['Xogador non encontrado']);
         } else {
             $respuesta = new Respuesta(200, ['Xogador eliminado']);
         }
+
+        $this->view->show('json.view.php', ['respuesta' => $respuesta]);
     }
 }
