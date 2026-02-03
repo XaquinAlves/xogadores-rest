@@ -22,28 +22,26 @@ class FrontController
                 $token = JwtTool::getBearerToken();
                 $user = JwtHelper::decode($token);
                 self::$user['permisos'] = (new PermisosModel())->getPermisos($user['user_type']);
-            } else {
-                self::$user['permisos']['xogador'] = '';
             }
             Route::add('/login', function () {
                 (new UserController())->login();
             }, 'post');
             Route::add('/xogador', function () {
-                if (str_contains(self::$user['permisos']['xogador'], 'r')) {
+                if (self::$user !== null && str_contains(self::$user['permisos']['xogador'], 'r')) {
                     (new XogadorController())->getXogadores();
                 } else {
                     http_response_code(403);
                 }
             });
             Route::add('/xogador/(\d*)', function ($num_licencia) {
-                if (str_contains(self::$user['permisos']['xogador'], 'r')) {
+                if (self::$user !== null && str_contains(self::$user['permisos']['xogador'], 'r')) {
                     (new XogadorController())->getXogador((int)$num_licencia);
                 } else {
                     http_response_code(403);
                 }
             });
             Route::add('/xogador/(\d*)', function ($num_licencia) {
-                if (str_contains(self::$user['permisos']['xogador'], 'r')) {
+                if (self::$user !== null && str_contains(self::$user['permisos']['xogador'], 'r')) {
                     (new XogadorController())->deleteXogador((int)$num_licencia);
                 } else {
                     http_response_code(403);
